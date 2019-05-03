@@ -1,5 +1,5 @@
 
-from Tkinter import*
+from Tkinter import *
 import matplotlib.pyplot as plt
 
 def do_nothing():
@@ -11,12 +11,21 @@ root = Tk()
 
 root.geometry('450x200')
 
-
-def myplot():
-    global d
-    plt.imshow(d['phase'][p, :, b, :].T, aspect='auto', interpolation='nearest')
+def read_data(msfile, f, s):
+    ms.open(msfile)
+    staql={'field':str(f), 'spw':str(s)}
+    ms.msselect(staql)
+    d=ms.getdata(['uvw', 'phase', 'time', 'field_id', 'axis_info', 'flag', 'data_desc_id', 'amplitude'], ifraxis=True)
+    return d
    
-
+def make_plot():
+    d = read_data(msfile, f, s)
+    plt.clf()
+    plt.imshow(d[variable][p,:,b,:].T, aspect='auto', interpolation='nearest')
+    plt.title('{0} {1} {2}'.format(variable, p, b))
+      
+msfile='/Volumes/NO NAME/POWERWALL/3C277.1_avg.ms'
+variable='phase'
 # Crear el menu principal
 main_menu = Menu(root)
 root.config(menu = main_menu)
@@ -51,7 +60,7 @@ main_menu.add_cascade(label = "PLOT", menu = plotMenu)
 
 #plot menu
 plot_menu = Menu(plotMenu)
-plotMenu.add_command(label = "Plot this", command = myplot)
+plotMenu.add_command(label = "Plot this", command = make_plot)
 
 
 #phase-amplitude menu 
@@ -371,21 +380,22 @@ scanmenu.add_command(label = "All", command = sc11)
 scanMenu.add_cascade(label = "Scan", menu = scanmenu)
 
 
-# Show the menu
+ # Show the menu
 root.config(menu=main_menu)
 
 # Show the window
 root.mainloop()
 
-ms.open ('/Volumes/NO NAME/3C277.1_avg.ms')
-staql={'field':str(f), 'spw':str(s)}
-ms.msselect (staql)
-d=ms.getdata(['uvw', 'phase', 'time', 'field_id', 'axis_info', 'flag', 'data_desc_id', 'amplitude'], ifraxis=True)
 
 
 
 
- 
+
+
+
+
+
+
 
 
 
